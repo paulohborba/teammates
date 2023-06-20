@@ -20,6 +20,27 @@ public class TimeHelperTest extends BaseTestCase {
     private static final String DATETIME_DISPLAY_FORMAT = "EEE, dd MMM yyyy, hh:mm a z";
 
     @Test
+    public void testGetInstantNearestHourBefore() {
+        Instant expected = Instant.parse("2020-12-31T16:00:00Z");
+        Instant actual = TimeHelper.getInstantNearestHourBefore(Instant.parse("2020-12-31T16:00:00Z"));
+    
+        assertEquals(expected, actual);
+    
+        actual = TimeHelper.getInstantNearestHourBefore(Instant.parse("2020-12-31T16:10:00Z"));
+    
+        assertEquals(expected, actual);
+    
+        actual = TimeHelper.getInstantNearestHourBefore(OffsetDateTime.parse("2021-01-01T00:30:00+08:00").toInstant());
+    
+        assertEquals(expected, actual);
+    
+        actual = TimeHelper.getInstantNearestHourBefore(OffsetDateTime.parse("2020-12-31T12:59:00-04:00").toInstant());
+    
+        assertEquals(expected, actual);
+    }
+
+
+    @Test
     public void testEndOfYearDates() {
         LocalDateTime date = LocalDateTime.of(2015, Month.DECEMBER, 30, 12, 0);
         assertEquals("Wed, 30 Dec 2015, 12:00 NOON UTC", TimeHelper.formatInstant(
