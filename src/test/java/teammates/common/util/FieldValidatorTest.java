@@ -852,4 +852,87 @@ public class FieldValidatorTest extends BaseTestCase {
         assertFalse(StringHelper.isMatching(googleId, FieldValidator.REGEX_GOOGLE_ID_NON_EMAIL));
     }
 
+    public class SessionTimeValidatorTest {
+
+        // Ciclo 1: Verificar se startTime é válido
+    
+        @Test
+        public void testValidStartTime() {
+            Instant startTime = Instant.now().plusSeconds(7200); // 2 horas a partir de agora
+            String timeZone = "UTC";
+            String invalidityInfo = SessionTimeValidator.getInvalidityInfoForNewStartTime(startTime, timeZone);
+            Assertions.assertEquals("", invalidityInfo);
+        }
+    
+        @Test
+        public void testInvalidStartTime_EarlierThanTwoHoursBeforeNow() {
+            Instant startTime = Instant.now().minusSeconds(7200); // 2 horas antes de agora
+            String timeZone = "UTC";
+            String invalidityInfo = SessionTimeValidator.getInvalidityInfoForNewStartTime(startTime, timeZone);
+            Assertions.assertNotEquals("", invalidityInfo);
+        }
+    
+        // Ciclo 2: Verificar se startTime é antes de 90 dias a partir de agora
+    
+        @Test
+        public void testValidStartTime_NinetyDaysFromNow() {
+            Instant startTime = Instant.now().plusSeconds(7776000); // 90 dias a partir de agora
+            String timeZone = "UTC";
+            String invalidityInfo = SessionTimeValidator.getInvalidityInfoForNewStartTime(startTime, timeZone);
+            Assertions.assertEquals("", invalidityInfo);
+        }
+    
+        @Test
+        public void testInvalidStartTime_LaterThanNinetyDaysFromNow() {
+            Instant startTime = Instant.now().plusSeconds(7776001); // mais de 90 dias a partir de agora
+            String timeZone = "UTC";
+            String invalidityInfo = SessionTimeValidator.getInvalidityInfoForNewStartTime(startTime, timeZone);
+            Assertions.assertNotEquals("", invalidityInfo);
+        }
+    
+        // Ciclo 3: Verificar se startTime é uma marcação exata de horas
+    
+        @Test
+        public void testValidStartTime_ExactHour() {
+            Instant startTime = Instant.now().plusSeconds(7200); // 2 horas a partir de agora
+            String timeZone = "UTC";
+            String invalidityInfo = SessionTimeValidator.getInvalidityInfoForNewStartTime(startTime, timeZone);
+            Assertions.assertEquals("", invalidityInfo);
+        }
+    
+        @Test
+        public void testInvalidStartTime_NotExactHour() {
+            Instant startTime = Instant.now().plusSeconds(7201); // 2 horas e 1 segundo a partir de agora
+            String timeZone = "UTC";
+            String invalidityInfo = SessionTimeValidator.getInvalidityInfoForNewStartTime(startTime, timeZone);
+            Assertions.assertNotEquals("", invalidityInfo);
+        }
+    
+        // Ciclo 4: Verificar se endTime é válido
+    
+        @Test
+        public void testValidEndTime() {
+            Instant endTime = Instant.now().plusSeconds(3600); // 1 hora a partir de agora
+            String timeZone = "UTC";
+            String invalidityInfo = SessionTimeValidator.getInvalidityInfoForNewEndTime(endTime, timeZone);
+            Assertions.assertEquals("", invalidityInfo);
+        }
+    
+        @Test
+        public void testInvalidEndTime_EarlierThanOneHourBeforeNow() {
+            Instant endTime = Instant.now().minusSeconds(3600); // 1 hora antes de agora
+            String timeZone = "UTC";
+            String invalidityInfo = SessionTimeValidator.getInvalidityInfoForNewEndTime(endTime, timeZone);
+            Assertions.assertNotEquals("", invalidityInfo);
+        }
+    
+        @Test
+        public void testInvalidEndTime_LaterThanTwelveMonthsFromNow() {
+            Instant endTime = Instant.now().plusSeconds(31536001); // mais de 12 meses a partir de agora
+            String timeZone = "UTC";
+            String invalidityInfo = SessionTimeValidator.getInvalidityInfoForNewEndTime(endTime, timeZone);
+            Assertions.assertNotEquals("", invalidityInfo);
+        }
+    }
+}
 }

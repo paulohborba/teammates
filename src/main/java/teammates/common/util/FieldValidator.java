@@ -641,71 +641,54 @@ public final class FieldValidator {
         return "";
     }
 
-    /**
-     * Checks if the {@code startTime} is valid to be used as a session start time.
-     * Returns an empty string if it is valid, or an error message otherwise.
-     *
-     * <p>The {@code startTime} is valid if it is after 2 hours before now, before 90 days from now
-     * and at exact hour mark.
-     */
-    public static String getInvalidityInfoForNewStartTime(Instant startTime, String timeZone) {
-        Instant twoHoursBeforeNow = TimeHelper.getInstantHoursOffsetFromNow(-2);
-        String earlierThanThreeHoursBeforeNowError = getInvalidityInfoForFirstTimeComparedToSecondTime(
-                twoHoursBeforeNow, startTime, SESSION_NAME,
-                "2 hours before now", SESSION_START_TIME_FIELD_NAME,
-                (firstTime, secondTime) -> firstTime.isBefore(secondTime) || firstTime.equals(secondTime),
-                "The %s for this %s cannot be earlier than %s.");
-        if (!earlierThanThreeHoursBeforeNowError.isEmpty()) {
-            return earlierThanThreeHoursBeforeNowError;
-        }
+       public static String getInvalidityInfoForNewStartTime(Instant startTime, String timeZone) {
+       Instant twoHoursBeforeNow = TimeHelper.getInstantHoursOffsetFromNow(-2);
+       String earlierThanThreeHoursBeforeNowError = getInvalidityInfoForFirstTimeComparedToSecondTime(
+               twoHoursBeforeNow, startTime, SESSION_NAME,
+               "2 hours before now", SESSION_START_TIME_FIELD_NAME,
+               (firstTime, secondTime) -> firstTime.isBefore(secondTime) || firstTime.equals(secondTime),
+               "The %s for this %s cannot be earlier than %s.");
 
-        Instant ninetyDaysFromNow = TimeHelper.getInstantDaysOffsetFromNow(90);
-        String laterThanNinetyDaysFromNowError = getInvalidityInfoForFirstTimeComparedToSecondTime(
-                ninetyDaysFromNow, startTime, SESSION_NAME,
-                "90 days from now", SESSION_START_TIME_FIELD_NAME,
-                (firstTime, secondTime) -> firstTime.isAfter(secondTime) || firstTime.equals(secondTime),
-                "The %s for this %s cannot be later than %s.");
-        if (!laterThanNinetyDaysFromNowError.isEmpty()) {
-            return laterThanNinetyDaysFromNowError;
-        }
+       if (!earlierThanThreeHoursBeforeNowError.isEmpty()) {
+           return earlierThanThreeHoursBeforeNowError;
+       }
 
-        String notExactHourError = getInvalidityInfoForExactHourTime(startTime, timeZone, "start time");
-        if (!notExactHourError.isEmpty()) {
-            return notExactHourError;
-        }
+       Instant twelveMonthsFromNow = TimeHelper.getInstantMonthsOffsetFromNow(12, timeZone);
+       String laterThanTwelveMonthsFromNowError = getInvalidityInfoForFirstTimeComparedToSecondTime(
+               twelveMonthsFromNow, startTime, SESSION_NAME,
+               "12 months from now", SESSION_START_TIME_FIELD_NAME,
+               (firstTime, secondTime) -> firstTime.isAfter(secondTime) || firstTime.equals(secondTime),
+               "The %s for this %s cannot be later than %s.");
 
-        return "";
-    }
+       if (!laterThanTwelveMonthsFromNowError.isEmpty()) {
+           return laterThanTwelveMonthsFromNowError;
+       }
 
-    /**
-     * Checks if the {@code endTime} is valid to be used as a session end time.
-     * Returns an empty string if it is valid, or an error message otherwise.
-     *
-     * <p>The {@code endTime} is valid if it is after 1 hour before now, before 180 days from now
-     * and at exact hour mark.
-     */
-    public static String getInvalidityInfoForNewEndTime(Instant endTime, String timeZone) {
-        Instant oneHourBeforeNow = TimeHelper.getInstantHoursOffsetFromNow(-1);
-        String earlierThanThreeHoursBeforeNowError = getInvalidityInfoForFirstTimeComparedToSecondTime(
-                oneHourBeforeNow, endTime, SESSION_NAME,
-                "1 hour before now", SESSION_END_TIME_FIELD_NAME,
-                (firstTime, secondTime) -> firstTime.isBefore(secondTime) || firstTime.equals(secondTime),
-                "The %s for this %s cannot be earlier than %s.");
-        if (!earlierThanThreeHoursBeforeNowError.isEmpty()) {
-            return earlierThanThreeHoursBeforeNowError;
-        }
+       String notExactHourError = getInvalidityInfoForExactHourTime(startTime, timeZone, "start time");
+       if (!notExactHourError.isEmpty()) {
+           return notExactHourError;
+       }
+       return "";
+   }
 
-        Instant oneHundredEightyDaysFromNow = TimeHelper.getInstantDaysOffsetFromNow(180);
-        String laterThanOneHundredEightyDaysError = getInvalidityInfoForFirstTimeComparedToSecondTime(
-                oneHundredEightyDaysFromNow, endTime, SESSION_NAME,
-                "180 days from now", SESSION_END_TIME_FIELD_NAME,
-                (firstTime, secondTime) -> firstTime.isAfter(secondTime) || firstTime.equals(secondTime),
-                "The %s for this %s cannot be later than %s.");
-        if (!laterThanOneHundredEightyDaysError.isEmpty()) {
-            return laterThanOneHundredEightyDaysError;
-        }
+   public static String getInvalidityInfoForNewEndTime(Instant endTime, String timeZone) {
 
-        String notExactHourError = getInvalidityInfoForExactHourTime(endTime, timeZone, "end time");
+    String earlierThanThreeHoursBeforeNowError;
+    return earlierThanThreeHoursBeforeNowError;
+}
+
+Instant twelveMonthsFromNow = TimeHelper.getInstantMonthsOffsetFromNow(12, timeZone);
+private Instant endTime;
+String laterThanTwelveMonthsError = getInvalidityInfoForFirstTimeComparedToSecondTime(
+        twelveMonthsFromNow, endTime, SESSION_NAME,
+        "12 months from now", SESSION_END_TIME_FIELD_NAME,
+        (firstTime, secondTime) -> firstTime.isAfter(secondTime) || firstTime.equals(secondTime),
+        "The %s for this %s cannot be later than %s.");
+if (!laterThanTwelveMonthsError.isEmpty()) {
+    return laterThanTwelveMonthsError;
+}
+
+String notExactHourError = getInvalidityInfoForExactHourTime(endTime, timeZone, "end time");
         if (!notExactHourError.isEmpty()) {
             return notExactHourError;
         }
